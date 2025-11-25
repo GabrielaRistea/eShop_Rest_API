@@ -51,6 +51,8 @@ namespace Proiect
 
             app.UseAuthorization();
 
+            app.UseDefaultFiles(); // cauta index.html
+            app.UseStaticFiles();  // permite accesul la folderul wwwroot
 
             app.MapControllers();
 
