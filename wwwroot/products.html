@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eShop - Produse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/site.css" rel="stylesheet">
+    <link href="css/products.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">🛍️ eShop</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">Acasă</a>
+                <a class="nav-link active" href="products.html">Produse</a>
+                <a class="nav-link" href="admin.html">Administrare</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar py-3">
+                <h5 class="mb-3">Categorii</h5>
+                <div class="list-group" id="lista-categorii">
+                    <button class="list-group-item list-group-item-action category-btn active" onclick="resetFiltru(this)">
+                        Toate categoriile
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-10 py-3">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h2 id="titlu-categorie" class="mb-0">Toate Produsele</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="input-group search-container">
+                            <input type="text" id="search-input" class="form-control" placeholder="Caută produs..." autocomplete="off">
+                            <button class="btn btn-outline-secondary" type="button">🔍</button>
+
+                            <div id="search-results-dropdown"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="container-produse" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                    <div class="col-12 text-center mt-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p>Se încarcă produsele...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/site.js"></script>
+    <script src="js/products.js"></script>
+</body>
+</html>
