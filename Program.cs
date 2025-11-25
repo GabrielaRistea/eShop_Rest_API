@@ -1,6 +1,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Proiect.Context;
+using Proiect.Repositories.Interfaces;
+using Proiect.Repositories;
+using Proiect.Services.Interfaces;
+using Proiect.Services;
 
 namespace Proiect
 {
@@ -22,6 +26,11 @@ namespace Proiect
             optionsBuilder =>
                 optionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("EShopDb"))
         );
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
 
             var app = builder.Build();
 
