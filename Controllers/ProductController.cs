@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Proiect.DTOs;
 using Proiect.Models;
 using Proiect.Services;
@@ -45,6 +46,7 @@ namespace Proiect.Controllers
             return Ok(mapProduct(product));
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm] ProductDto productDto)
         {
             var products = mapProduct(productDto);
@@ -66,6 +68,7 @@ namespace Proiect.Controllers
             return Ok(products);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditAsync(int id, [FromForm] ProductDto productDto)
         {
             if (id != productDto.Id)
@@ -79,6 +82,7 @@ namespace Proiect.Controllers
 
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var product = _productService.GetProductById(id);
