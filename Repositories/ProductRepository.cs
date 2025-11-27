@@ -16,16 +16,12 @@ namespace Proiect.Repositories
         {
             return _context.Products
                 .Include(c => c.Category)
-                .Include(o => o.OrderItems)
-                .Include(w => w.WishlistProducts)
                 .ToList();
         }
         public Product GetById(int id)
         {
             return _context.Products
-                .Include(c => c.Category)
-                .Include(o => o.OrderItems)
-                .Include(w => w.WishlistProducts).FirstOrDefault(p => p.ProductID == id);
+                .Include(c => c.Category).FirstOrDefault(p => p.ProductID == id);
         }
         public void Save()
         {

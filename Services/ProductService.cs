@@ -86,7 +86,7 @@ namespace Proiect.Services
         {
             var product = _productRepository.GetAll();
 
-            product = product.Where(p => p.Name != null ? p.Name.Contains(name) : true).ToList();
+            product = product.Where(p => p.Name != null ? p.Name.StartsWith(name) : true).ToList();
 
             return product.ToList();
         }
