@@ -9,10 +9,10 @@
         return;
     }
 
-    incarcaDetaliiProdus(productId);
+    getProductDetails(productId);
 });
 
-async function incarcaDetaliiProdus(id) {
+async function getProductDetails(id) {
     const container = document.getElementById('main-container');
 
     try {

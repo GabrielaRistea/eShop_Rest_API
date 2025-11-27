@@ -5,6 +5,10 @@ using Proiect.Repositories.Interfaces;
 using Proiect.Repositories;
 using Proiect.Services.Interfaces;
 using Proiect.Services;
+using Microsoft.AspNetCore.Identity;
+using Proiect.Models;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 
 namespace Proiect
 {
@@ -20,7 +24,41 @@ namespace Proiect
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             //builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "eShop API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token like: Bearer <token>"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+            });
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication()
+                .AddBearerToken(IdentityConstants.BearerScheme);
+
+            builder.Services.AddIdentityCore<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ShopContext>()
+                .AddApiEndpoints();
 
             builder.Services.AddDbContext<ShopContext>(
             optionsBuilder =>
@@ -54,6 +92,7 @@ namespace Proiect
             app.UseDefaultFiles(); // cauta index.html
             app.UseStaticFiles();  // permite accesul la folderul wwwroot
 
+            app.MapIdentityApi<User>();
             app.MapControllers();
 
             app.Run();

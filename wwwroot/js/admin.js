@@ -3,12 +3,23 @@ let isEditingCategory = false;
 let isEditingProduct = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    refreshCategorii();
-    refreshProduse();
+    if (!isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    if (!isAdmin()) {
+        alert("Nu ai acces la această pagină!");
+        window.location.href = 'index.html';
+        return;
+    }
+
+    refreshCategories();
+    refreshProducts();
 });
 
 // citire si stergere
-async function refreshCategorii() {
+async function refreshCategories() {
     try {
         const res = await fetch(URL_CATEGORII);
         const categorii = await res.json();
@@ -38,7 +49,7 @@ async function refreshCategorii() {
                 <span>${c.name}</span>
                 <div>
                     <button class="btn btn-sm btn-outline-warning me-1" onclick="startEditCategory(${c.categoryID}, '${c.name}')">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="stergeCategorie(${c.categoryID})">Delete</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.categoryID})">Delete</button>
                 </div>
             `;
             listaUl.appendChild(li);
@@ -68,19 +79,19 @@ document.getElementById('form-categorie').addEventListener('submit', async (e) =
         if (isEditingCategory && editId) {
             url = `${URL_CATEGORII}/${editId}`;
             method = 'PUT';
-            body.categoryID = parseInt(editId); 
+            body.categoryID = parseInt(editId);
         }
 
         const response = await fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(), 
             body: JSON.stringify(body)
         });
 
         if (response.ok) {
             msgDiv.innerHTML = `<div class="alert alert-success">${isEditingCategory ? 'Actualizat' : 'Adăugat'} cu succes!</div>`;
-            resetFormCategory(); 
-            refreshCategorii(); 
+            resetFormCategory();
+            refreshCategories();
             setTimeout(() => msgDiv.innerHTML = '', 3000);
         } else {
             msgDiv.innerHTML = '<div class="alert alert-danger">Eroare la salvare.</div>';
@@ -96,19 +107,21 @@ function startEditCategory(id, name) {
     document.getElementById('edit-cat-id').value = id;
     document.getElementById('cat-nume').value = name;
 
-    // UI Updates
     document.getElementById('btn-submit-cat').textContent = "Actualizează Categoria";
     document.getElementById('btn-submit-cat').classList.replace('btn-primary', 'btn-warning');
     document.getElementById('btn-cancel-cat').style.display = 'block';
 }
 
 // delete
-async function stergeCategorie(id) {
+async function deleteCategory(id) {
     if (!confirm('Sigur ștergi categoria? Produsele asociate s-ar putea șterge și ele!')) return;
 
     try {
-        const res = await fetch(`${URL_CATEGORII}/${id}`, { method: 'DELETE' });
-        if (res.ok) refreshCategorii();
+        const res = await fetch(`${URL_CATEGORII}/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders() 
+        });
+        if (res.ok) refreshCategories();
         else alert('Eroare la ștergere.');
     } catch (err) { console.error(err); }
 }
@@ -125,7 +138,7 @@ function resetFormCategory() {
 }
 
 // citire si stergere
-async function refreshProduse() {
+async function refreshProducts() {
     try {
         const res = await fetch(URL_PRODUSE);
         const produse = await res.json();
@@ -152,7 +165,7 @@ async function refreshProduse() {
                 <td><small class="text-muted">Stoc: ${p.stock ?? 0}</small></td>
                 <td>
                     <button class="btn btn-sm btn-outline-warning" onclick="startEditProduct(${p.id})">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="stergeProdus(${p.id})">Delete</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${p.id})">Delete</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -185,15 +198,20 @@ document.getElementById('form-produs').addEventListener('submit', async (e) => {
             method = 'PUT';
         }
 
+        const headers = {};
+        const token = getToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(url, {
             method: method,
+            headers: headers, 
             body: formData
         });
 
         if (response.ok) {
             msgDiv.innerHTML = `<div class="alert alert-success">${isEditingProduct ? 'Actualizat' : 'Adăugat'} cu succes!</div>`;
             resetFormProduct();
-            refreshProduse();
+            refreshProducts();
             setTimeout(() => msgDiv.innerHTML = '', 3000);
         } else {
 
@@ -222,14 +240,14 @@ async function startEditProduct(id) {
         isEditingProduct = true;
 
         // completam formularul
-        document.getElementById('edit-prod-id').value = p.id; 
+        document.getElementById('edit-prod-id').value = p.id;
         document.getElementById('prod-name').value = p.name;
         document.getElementById('prod-price').value = p.price;
         document.getElementById('prod-desc').value = p.description;
         document.getElementById('prod-stock').value = p.stock;
 
         const select = document.getElementById('select-categorie');
-        select.value = p.category; 
+        select.value = p.category;
 
         document.getElementById('btn-submit-prod').textContent = "Actualizează Produsul";
         document.getElementById('btn-submit-prod').classList.replace('btn-success', 'btn-warning');
@@ -242,11 +260,14 @@ async function startEditProduct(id) {
 }
 
 // stergere produs
-async function stergeProdus(id) {
+async function deleteProduct(id) {
     if (!confirm('Sigur vrei să ștergi acest produs?')) return;
     try {
-        const res = await fetch(`${URL_PRODUSE}/${id}`, { method: 'DELETE' });
-        if (res.ok) refreshProduse();
+        const res = await fetch(`${URL_PRODUSE}/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders() 
+        });
+        if (res.ok) refreshProducts();
         else alert('Eroare la ștergere.');
     } catch (err) { console.error(err); }
 }
