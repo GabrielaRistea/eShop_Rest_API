@@ -4,10 +4,10 @@ using Proiect.Models;
 
 namespace Proiect.Context
 {
-    public class ShopContext : DbContext
+    public class ShopContext : IdentityDbContext<User>
     {
         public ShopContext(DbContextOptions<ShopContext> options) : base(options) { }
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }

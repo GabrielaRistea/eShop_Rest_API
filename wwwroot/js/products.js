@@ -2,11 +2,11 @@
 let allProducts = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    incarcaCategorii();
-    preloadProduse();
+    loadCategories();
+    preloadProducts();
 });
 
-async function preloadProduse() {
+async function preloadProducts() {
     const container = document.getElementById('container-produse');
     container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
 
@@ -24,7 +24,7 @@ async function preloadProduse() {
 }
 
 // incarcare categorii
-async function incarcaCategorii() {
+async function loadCategories() {
     try {
         const response = await fetch(URL_CATEGORII);
         if (!response.ok) throw new Error("Eroare la categorii");
@@ -36,7 +36,7 @@ async function incarcaCategorii() {
             const btn = document.createElement('button');
             btn.className = 'list-group-item list-group-item-action category-btn';
             btn.textContent = cat.name;
-            btn.onclick = () => filtreazaDupaCategorie(cat.categoryID, cat.name, btn);
+            btn.onclick = () => filterByCategory(cat.categoryID, cat.name, btn);
             lista.appendChild(btn);
         });
     } catch (err) {
@@ -45,7 +45,7 @@ async function incarcaCategorii() {
 }
 
 // incarcare produse filtrare dupa categorie
-async function incarcaProduse(categoryId = null) {
+async function loadProductsByCategory(categoryId = null) {
     const container = document.getElementById('container-produse');
     container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
 
@@ -79,7 +79,7 @@ function renderProduse(produse) {
             imageSrc = `data:image/jpeg;base64,${p.productImage}`;
         }
 
-        // În funcția renderProduse(produse) din js/products.js
+
 
         const html = `
     <div class="col">
@@ -110,7 +110,7 @@ function renderProduse(produse) {
 }
 
 
-function filtreazaDupaCategorie(id, nume, btnElement) {
+function filterByCategory(id, nume, btnElement) {
     document.getElementById('titlu-categorie').textContent = `Produse: ${nume}`;
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btnElement.classList.add('active');
@@ -119,7 +119,7 @@ function filtreazaDupaCategorie(id, nume, btnElement) {
     const dropdown = document.getElementById('search-results-dropdown');
     if (dropdown) dropdown.style.display = 'none';
 
-    incarcaProduse(id);
+    loadProductsByCategory(id);
 }
 
 function resetFiltru(btnElement) {
@@ -132,7 +132,7 @@ function resetFiltru(btnElement) {
 }
 
 // bara cautare
-async function cautaProduse() {
+async function searchProducts() {
     const input = document.getElementById('search-input');
     const term = input.value.trim();
     const container = document.getElementById('container-produse');
@@ -167,7 +167,7 @@ async function cautaProduse() {
 // enter key listener
 document.getElementById('search-input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
-        cautaProduse();
+        searchProducts();
 
         const dropdown = document.getElementById('search-results-dropdown');
         if (dropdown) dropdown.style.display = 'none';

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Proiect.Models;
 using Proiect.Services.Interfaces;
 
@@ -43,6 +45,7 @@ namespace Proiect.Controllers
 
         // POST api/<CategoryController>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create([FromBody] Category category)
         {
             var categories = _categoryService.getAllCategories();
@@ -53,6 +56,7 @@ namespace Proiect.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, [FromBody] Category category)
         {
             if (id != category.CategoryID)
@@ -68,6 +72,7 @@ namespace Proiect.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var category = _categoryService.GetCategoryById(id);
