@@ -64,3 +64,36 @@
     border-radius: 4px;
     margin-right: 15px;
 }
+
+.noUi-target {
+    height: 6px;
+    border: none;
+    box-shadow: none;
+    background-color: #e9ecef; 
+}
+
+.noUi-connect {
+    background: #adb5bd; 
+}
+
+.noUi-handle {
+    width: 20px !important;
+    height: 20px !important;
+    right: -10px !important;
+    top: -7px !important;
+    border-radius: 50%;
+    background: #fff; 
+    border: 1px solid #ced4da; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+
+    .noUi-handle::before, .noUi-handle::after {
+        display: none;
+    }
+
+#input-min, #input-max {
+    max-width: 80px; 
+    font-size: 14px;
+}

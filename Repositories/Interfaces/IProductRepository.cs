@@ -12,5 +12,6 @@ namespace Proiect.Repositories.Interfaces
         void Delete(Product product);
         void Save();
         List<Product> GetProductByCategory(int id);
+        IEnumerable<Product> GetByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock);
     }
 }

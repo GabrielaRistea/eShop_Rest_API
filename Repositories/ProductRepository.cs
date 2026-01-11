@@ -51,5 +51,35 @@ namespace Proiect.Repositories
                 .Include(p => p.Category)
                 .Where(p => p.CatogoryId == id).ToList();
         }
+
+        public IEnumerable<Product> GetByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock)
+        {
+            var products = _context.Products.Include(p => p.Category).AsQueryable();
+
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.Price >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value);
+            }
+
+            if (inStock.HasValue)
+            {
+                if (inStock == true)
+                {
+                    products = products.Where(p => p.Stock > 0);
+                }
+                else
+                {
+                    products = products.Where(p => p.Stock == 0 || p.Stock == null);
+                }
+            }
+            
+
+                return products.ToList();
+        }
     }
 }

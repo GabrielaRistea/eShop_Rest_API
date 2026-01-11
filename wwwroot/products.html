@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eShop - Produse</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css" rel="stylesheet">
     <link href="css/site.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link href="css/products.css" rel="stylesheet">
@@ -40,6 +41,38 @@
                         Toate categoriile
                     </button>
                 </div>
+
+                <hr class="my-4">
+                <h5 class="mb-3">Filtrare</h5>
+                <div class="mb-4">
+                    <label class="form-label small text-muted fw-bold mb-3">Preț (RON)</label>
+
+                    <div id="price-slider" class="mb-3 custom-slider"></div>
+
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <input type="number" id="input-min" class="form-control form-control-sm text-center" value="0">
+
+                        <span class="text-muted">-</span>
+
+                        <input type="number" id="input-max" class="form-control form-control-sm text-center" value="200">
+
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Disponibilitate</label>
+                    <select id="stock-select" class="form-select form-select-sm">
+                        <option value="">Toate produsele</option>
+                        <option value="true">Doar în stoc</option>
+                        <option value="false">Stoc epuizat</option>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" onclick="applyFilters()">Aplică Filtre</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="resetFiltersUI()">Resetează</button>
+                </div>
+
             </div>
 
             <div class="col-md-10 py-3">
@@ -67,6 +100,9 @@
         </div>
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
     <script src="js/site.js"></script>
     <script src="js/products.js"></script>
 </body>

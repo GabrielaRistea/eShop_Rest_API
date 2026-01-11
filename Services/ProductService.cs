@@ -1,4 +1,5 @@
-﻿using Proiect.DTOs;
+﻿using NuGet.Versioning;
+using Proiect.DTOs;
 using Proiect.Models;
 using Proiect.Repositories.Interfaces;
 using Proiect.Services.Interfaces;
@@ -106,6 +107,16 @@ namespace Proiect.Services
                 Category = p.CatogoryId,
                 CategoryName = p.Category?.Name ?? "Uncategorized",
             }).ToList();
+        }
+
+        public List<Product> GetProductsByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock)
+        {
+            if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
+            {
+                throw new ArgumentException("Pretul minim nu poate fi mai mare decat cel maxim");
+            }
+
+            return _productRepository.GetByPriceAndStock(minPrice, maxPrice, inStock).ToList();
         }
     }
 }
