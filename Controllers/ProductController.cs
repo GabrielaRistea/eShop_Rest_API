@@ -93,6 +93,23 @@ namespace Proiect.Controllers
             return NoContent();
         }
 
+        [HttpGet("filter")]
+        public IActionResult FilterProducts([FromQuery] float? minPrice, [FromQuery] float? maxPrice, [FromQuery] bool? inStock)
+        {
+            try
+            {
+                var products = _productService.GetProductsByPriceAndStock(minPrice, maxPrice, inStock);
+
+                var productDtos = products.Select(p => mapProduct(p)).ToList();
+
+                return Ok(productDtos);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         private ProductDto mapProduct(Product p)
         {
             return new ProductDto()

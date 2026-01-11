@@ -1,9 +1,49 @@
 ﻿// variabila globala pentru a memora toate produsele (cache pt search)
 let allProducts = [];
+let inputMin = document.getElementById('input-min');
+let inputMax = document.getElementById('input-max');
+let priceSlider = document.getElementById('price-slider');
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCategories();
     preloadProducts();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Configurare Slider
+    noUiSlider.create(priceSlider, {
+        start: [0, 200], // valori initiale
+        connect: true,    
+        step: 1,          // pas de 1 RON
+        range: {
+            'min': 0,
+            'max': 200   // maximul absolut posibil
+        },
+
+        format: {
+            to: value => Math.round(value),
+            from: value => Number(value)
+        }
+    });
+
+    // actualizare valori din casute atunci cand tragem de slider
+    priceSlider.noUiSlider.on('update', function (values, handle) {
+        if (handle === 0) {
+            inputMin.value = values[0];
+        } else {
+            inputMax.value = values[1];
+        }
+    });
+
+    // actualizare slider atunci cand scriem in casute
+    inputMin.addEventListener('change', function () {
+        priceSlider.noUiSlider.set([this.value, null]);
+    });
+
+    inputMax.addEventListener('change', function () {
+        priceSlider.noUiSlider.set([null, this.value]);
+    });
 });
 
 async function preloadProducts() {
@@ -245,3 +285,41 @@ document.addEventListener('click', (e) => {
         dropdown.style.display = 'none';
     }
 });
+
+// functie de filtrare
+async function applyFilters() {
+    const minPrice = document.getElementById('input-min').value;
+    const maxPrice = document.getElementById('input-max').value;
+
+    const stockStatus = document.getElementById('stock-select').value;
+    const container = document.getElementById('container-produse');
+
+    const params = new URLSearchParams();
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
+    if (stockStatus !== "") params.append('inStock', stockStatus);
+
+    container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
+
+    try {
+        const response = await fetch(`${URL_PRODUSE}/filter?${params.toString()}`);
+
+        const produse = await response.json();
+        renderProduse(produse);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// resetare UI
+function resetFiltersUI() {
+    priceSlider.noUiSlider.set([0, 200]); // resetare slider
+    document.getElementById('stock-select').value = '';
+
+    // Resetare inputuri 
+    inputMin.value = 0;
+    inputMax.value = 200;
+
+    const btnToate = document.querySelector('.category-btn');
+    resetFiltru(btnToate);
+}

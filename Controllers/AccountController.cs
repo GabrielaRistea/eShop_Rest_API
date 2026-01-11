@@ -19,7 +19,7 @@ namespace Proiect.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             if (!await _roleManager.RoleExistsAsync("User"))
             {
@@ -63,7 +63,7 @@ namespace Proiect.Controllers
         }
     }
 
-    public class RegisterRequest
+    public class RegisterDto
     {
         public string Email { get; set; }
         public string Password { get; set; }

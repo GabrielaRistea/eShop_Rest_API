@@ -13,5 +13,6 @@ namespace Proiect.Services.Interfaces
         bool ProductExists(int id);
         List<Product> searchProduct(string name);
         Task<List<ProductDto>> ProductsByCategory(int id);
+        List<Product> GetProductsByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock);
     }
 }
