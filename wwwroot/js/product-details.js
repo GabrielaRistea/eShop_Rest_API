@@ -1,4 +1,5 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿
+document.addEventListener('DOMContentLoaded', () => {
     // extragere id din url
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
@@ -57,13 +58,17 @@ async function getProductDetails(id) {
                         <span class="me-3 fw-bold">Stoc: ${p.stock > 0 ? p.stock + ' buc.' : '<span class="text-danger">Epuizat</span>'}</span>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-block">
+                    <div class="d-flex gap-3">
                         <button class="btn btn-primary btn-lg px-4" ${p.stock === 0 ? 'disabled' : ''}>
                             Adaugă în Coș 🛒
                         </button>
-                        <a href="products.html" class="btn btn-outline-secondary btn-lg px-4">
-                            Înapoi
-                        </a>
+                        <button class="btn btn-outline-danger btn-sm" onclick="addToWishlist(${p.id})" title="Adaugă la favorite">
+                                Favorite
+                            </button>
+                    </div>
+                        <div class="mt-4">
+                         <a href="products.html" class="text-muted text-decoration-none small">← Înapoi la listă</a>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -71,5 +76,37 @@ async function getProductDetails(id) {
 
     } catch (err) {
         container.innerHTML = `<div class="alert alert-danger">Eroare: ${err.message} <br> <a href="produse.html">Înapoi la produse</a></div>`;
+    }
+}
+
+const URL_WISHLIST_ADD = "https://localhost:7052/Wishlist/add";
+
+async function addToWishlist(productId) {
+    if (!isLoggedIn()) {
+        alert("Trebuie să fii logată pentru a salva produse în Wishlist!");
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${URL_WISHLIST_ADD}/${productId}`, {
+            method: 'POST',
+            headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert("✅ " + data.message);
+        } else if (response.status === 400) {
+            alert("ℹ️ Acest produs se află deja în Wishlist-ul tău.");
+        } else if (response.status === 401) {
+            alert("Sesiunea a expirat. Te rugăm să te loghezi din nou.");
+            window.location.href = 'login.html';
+        } else {
+            alert("Eroare la adăugare. Status: " + response.status);
+        }
+    } catch (err) {
+        console.error("Eroare server:", err);
+        alert("Serverul nu a putut fi contactat.");
     }
 }
