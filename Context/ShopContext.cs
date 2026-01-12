@@ -14,7 +14,7 @@ namespace Proiect.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<HistoryOrders> HistoryOrders { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<WishlistProduct> WishlistProducts { get; set; }
+        //public DbSet<WishlistProduct> WishlistProducts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

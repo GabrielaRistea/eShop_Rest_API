@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SweetCorner - Wishlist-ul Meu</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="css/site.css" rel="stylesheet">
+    <style>
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .wishlist-title {
+            font-family: 'Dancing Script', cursive;
+            color: #c9184a;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">🧁 SweetCorner</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <a class="nav-link" href="index.html">Acasă</a>
+                    <a class="nav-link" href="products.html">Produse</a>
+                    <a class="nav-link active" href="wishlist.html">❤️ Wishlist</a>
+                    <a class="nav-link" href="admin.html" style="display:none;">Administrare</a>
+                    <div class="d-flex ms-2" id="auth-links"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 wishlist-title">Favoritele Mele</h1>
+            <p class="text-muted">Produsele pe care le-ai salvat pentru mai târziu.</p>
+        </div>
+
+        <div id="wishlist-container" class="row g-4">
+            <div class="text-center">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Se încarcă...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
+        <div class="container">
+            <h4 class="mb-3" style="font-family: 'Dancing Script', cursive; color: #ff85a2;">SweetCorner</h4>
+            <p class="mb-0 small text-white-50">© 2025 SweetCorner. Toate drepturile rezervate.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/site.js"></script>
+    <script src="js/wishlist.js"></script>
+</body>
+</html>

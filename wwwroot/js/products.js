@@ -138,6 +138,9 @@ function renderProduse(produse) {
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fs-5 fw-bold text-dark">${p.price} RON</span>
+                        <button class="btn btn-outline-danger btn-sm" onclick="addToWishlist(${p.id})" title="Adaugă la favorite">
+                                Favorite
+                            </button>
                         <button class="btn btn-outline-primary btn-sm z-index-2">Adaugă</button>
                     </div>
                 </div>
@@ -322,4 +325,36 @@ function resetFiltersUI() {
 
     const btnToate = document.querySelector('.category-btn');
     resetFiltru(btnToate);
+}
+
+const URL_WISHLIST_ADD = "https://localhost:7052/Wishlist/add";
+
+async function addToWishlist(productId) {
+    if (!isLoggedIn()) {
+        alert("Trebuie să fii logată pentru a salva produse în Wishlist!");
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${URL_WISHLIST_ADD}/${productId}`, {
+            method: 'POST',
+            headers: getAuthHeaders() 
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert("✅ " + data.message);
+        } else if (response.status === 400) {
+            alert("ℹ️ Acest produs se află deja în Wishlist-ul tău.");
+        } else if (response.status === 401) {
+            alert("Sesiunea a expirat. Te rugăm să te loghezi din nou.");
+            window.location.href = 'login.html';
+        } else {
+            alert("Eroare la adăugare. Status: " + response.status);
+        }
+    } catch (err) {
+        console.error("Eroare server:", err);
+        alert("Serverul nu a putut fi contactat.");
+    }
 }

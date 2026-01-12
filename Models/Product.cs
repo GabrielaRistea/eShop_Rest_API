@@ -21,6 +21,6 @@ namespace Proiect.Models
         [ForeignKey(nameof(Category))]
         public int CatogoryId { get; set; }
         public Category Category { get; set; }
-        public ICollection<WishlistProduct> WishlistProducts { get; set; }
+        public ICollection<Wishlist> Wishlist { get; set; }
     }
 }
