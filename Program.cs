@@ -71,6 +71,8 @@ namespace Proiect
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<IWishlistService, WishlistService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             var app = builder.Build();
 

@@ -18,6 +18,8 @@ namespace Proiect.Models
         [ForeignKey(nameof(HistoryOrder))]
         public int? IdHistoryOrders { get; set; }
         public HistoryOrders? HistoryOrder { get; set; }
-        public string Address { get; set; }
+        public string? Address { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? PaymentMethod { get; set; }
     }
 }
