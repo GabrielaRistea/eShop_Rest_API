@@ -52,7 +52,7 @@ namespace Proiect.Repositories
                 .Where(p => p.CatogoryId == id).ToList();
         }
 
-        public IEnumerable<Product> GetByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock)
+        public IEnumerable<Product> GetProductsByFilters(float? minPrice, float? maxPrice, bool? inStock, int? categoryId)
         {
             var products = _context.Products.Include(p => p.Category).AsQueryable();
 
@@ -78,8 +78,12 @@ namespace Proiect.Repositories
                 }
             }
             
+            if (categoryId.HasValue)
+            {
+                products = products.Where(p => p.CatogoryId == categoryId.Value);
+            }
 
-                return products.ToList();
+            return products.ToList();
         }
     }
 }

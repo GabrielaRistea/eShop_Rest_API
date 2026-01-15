@@ -1,5 +1,6 @@
 ﻿// variabila globala pentru a memora toate produsele (cache pt search)
 let allProducts = [];
+let currentCategoryId = null;
 let inputMin = document.getElementById('input-min');
 let inputMax = document.getElementById('input-max');
 let priceSlider = document.getElementById('price-slider');
@@ -156,6 +157,8 @@ function renderProduse(produse) {
 
 
 function filterByCategory(id, nume, btnElement) {
+    currentCategoryId = id;
+
     document.getElementById('titlu-categorie').textContent = `Produse: ${nume}`;
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btnElement.classList.add('active');
@@ -164,15 +167,22 @@ function filterByCategory(id, nume, btnElement) {
     const dropdown = document.getElementById('search-results-dropdown');
     if (dropdown) dropdown.style.display = 'none';
 
+    resetFiltersUI();
+
     loadProductsByCategory(id);
 }
 
 function resetFiltru(btnElement) {
+    currentCategoryId = null;
+
     document.getElementById('titlu-categorie').textContent = 'Toate Produsele';
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btnElement.classList.add('active');
 
     document.getElementById('search-input').value = '';
+
+    resetFiltersUI();
+
     renderProduse(allProducts); 
 }
 
@@ -304,6 +314,10 @@ async function applyFilters() {
     if (maxPrice) params.append('maxPrice', maxPrice);
     if (stockStatus !== "") params.append('inStock', stockStatus);
 
+    if (currentCategoryId !== null) {
+        params.append('categoryId', currentCategoryId);
+    }
+
     container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
 
     try {
@@ -318,15 +332,18 @@ async function applyFilters() {
 
 // resetare UI
 function resetFiltersUI() {
-    priceSlider.noUiSlider.set([0, 200]); // resetare slider
-    document.getElementById('stock-select').value = '';
+    if (priceSlider && priceSlider.noUiSlider) {
+        priceSlider.noUiSlider.set([0, 200]);
+    }
 
-    // Resetare inputuri 
-    inputMin.value = 0;
-    inputMax.value = 200;
+    const stockSelect = document.getElementById('stock-select');
+    if (stockSelect) stockSelect.value = '';
 
-    const btnToate = document.querySelector('.category-btn');
-    resetFiltru(btnToate);
+    const minIn = document.getElementById('input-min');
+    const maxIn = document.getElementById('input-max');
+
+    if (minIn) minIn.value = 0;
+    if (maxIn) maxIn.value = 200;
 }
 
 const URL_WISHLIST_ADD = "https://localhost:7052/Wishlist/add";
