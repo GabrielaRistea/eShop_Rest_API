@@ -94,11 +94,11 @@ namespace Proiect.Controllers
         }
 
         [HttpGet("filter")]
-        public IActionResult FilterProducts([FromQuery] float? minPrice, [FromQuery] float? maxPrice, [FromQuery] bool? inStock)
+        public IActionResult FilterProducts([FromQuery] float? minPrice, [FromQuery] float? maxPrice, [FromQuery] bool? inStock, [FromQuery] int? categoryId)
         {
             try
             {
-                var products = _productService.GetProductsByPriceAndStock(minPrice, maxPrice, inStock);
+                var products = _productService.GetProductsByFilters(minPrice, maxPrice, inStock, categoryId);
 
                 var productDtos = products.Select(p => mapProduct(p)).ToList();
 

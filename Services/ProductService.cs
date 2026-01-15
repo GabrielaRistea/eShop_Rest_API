@@ -109,14 +109,14 @@ namespace Proiect.Services
             }).ToList();
         }
 
-        public List<Product> GetProductsByPriceAndStock(float? minPrice, float? maxPrice, bool? inStock)
+        public List<Product> GetProductsByFilters(float? minPrice, float? maxPrice, bool? inStock, int? categoryId)
         {
             if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
             {
                 throw new ArgumentException("Pretul minim nu poate fi mai mare decat cel maxim");
             }
 
-            return _productRepository.GetByPriceAndStock(minPrice, maxPrice, inStock).ToList();
+            return _productRepository.GetProductsByFilters(minPrice, maxPrice, inStock, categoryId).ToList();
         }
     }
 }
