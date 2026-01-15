@@ -81,6 +81,8 @@ namespace Proiect.Repositories
         public async Task<List<Order>> GetOrdersByUserIdAsync(string userId)
         {
             return await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
                 .Where(o => o.IdUser == userId && o.statusOrder != "Cart")
                 .ToListAsync();
         }

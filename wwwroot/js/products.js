@@ -139,9 +139,11 @@ function renderProduse(produse) {
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fs-5 fw-bold text-dark">${p.price} RON</span>
                         <button class="btn btn-outline-danger btn-sm" onclick="addToWishlist(${p.id})" title="Adaugă la favorite">
-                                Favorite
+                             ❤️ Favorite
                             </button>
-                        <button class="btn btn-outline-primary btn-sm z-index-2">Adaugă</button>
+                        <button class="btn btn-outline-primary btn-sm z-index-2" ${p.stock === 0 ? 'disabled' : ''} onclick="addToCart(${p.id})">
+                            🛒 Adaugă în Coș 
+                        </button>
                     </div>
                 </div>
             </div>

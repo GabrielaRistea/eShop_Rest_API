@@ -55,15 +55,15 @@ async function getProductDetails(id) {
                     <hr class="my-4">
 
                     <div class="d-flex align-items-center mb-4">
-                        <span class="me-3 fw-bold">Stoc: ${p.stock > 0 ? p.stock + ' buc.' : '<span class="text-danger">Epuizat</span>'}</span>
+                        <span class="me-3 fw-bold"> ${p.stock > 0 ? '<span class="text-danger">In Stoc</span>' : '<span class="text-danger">Stoc Epuizat</span>'}</span>
                     </div>
 
                     <div class="d-flex gap-3">
-                        <button class="btn btn-primary btn-lg px-4" ${p.stock === 0 ? 'disabled' : ''}>
-                            Adaugă în Coș 🛒
+                        <button class="btn btn-primary btn-lg px-4" ${p.stock === 0 ? 'disabled' : ''} onclick="addToCart(${p.id})">
+                           🛒 Adaugă în Coș 
                         </button>
                         <button class="btn btn-outline-danger btn-sm" onclick="addToWishlist(${p.id})" title="Adaugă la favorite">
-                                Favorite
+                            ❤️  Favorite
                             </button>
                     </div>
                         <div class="mt-4">

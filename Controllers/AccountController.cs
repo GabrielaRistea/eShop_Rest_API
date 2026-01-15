@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Proiect.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Proiect.Controllers
 {
@@ -30,8 +31,8 @@ namespace Proiect.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FirstName = "",
-                LastName = ""
+                FirstName = model.FirstName,
+                LastName = model.LastName
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -58,14 +59,22 @@ namespace Proiect.Controllers
             return Ok(new
             {
                 email = user.Email,
-                roles = roles
+                roles = roles,
+                firstName = user.FirstName,
+                lastName = user.LastName
             });
         }
     }
 
     public class RegisterDto
     {
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+
+        [Required]
         public string Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

@@ -255,8 +255,8 @@ namespace Proiect.Services
             options.LineItems = lineItems;
             options.Mode = "payment";
 
-            options.SuccessUrl = "http://localhost:4200/order-success?session_id={CHECKOUT_SESSION_ID}";
-            options.CancelUrl = "http://localhost:4200/cart";
+            options.SuccessUrl = "https://localhost:7052/order-confirmation.html?session_id={CHECKOUT_SESSION_ID}";
+            options.CancelUrl = "https://localhost:7052/index.html";
 
             options.Metadata = new Dictionary<string, string>();
             options.Metadata.Add("OrderId", order.OrderID.ToString());
@@ -279,6 +279,11 @@ namespace Proiect.Services
                 int orderId = int.Parse(orderIdStr);
 
                 var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
+                if (order.statusOrder == "Platit_Stripe")
+                {
+                    return true;
+                }
 
                 if (order != null && order.statusOrder == "Plata in asteptare")
                 {
