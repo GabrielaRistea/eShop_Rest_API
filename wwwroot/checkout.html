@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizare Comandă - SweetCorner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="css/site.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+    <style>
+        .summary-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">🧁 SweetCorner</a>
+            <span class="text-white-50">Checkout Securizat</span>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <h2 class="mb-4 fw-bold text-center">Finalizare Comandă</h2>
+
+        <div class="row g-5">
+
+            <div class="col-md-5 col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 20px; z-index: 1;">
+                    <div class="card-header bg-light py-3 border-bottom">
+                        <h5 class="mb-0 fw-bold text-secondary">Sumar Coș</h5>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="order-summary-list">
+                            <li class="list-group-item text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-footer bg-white p-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal</span>
+                            <span class="fw-bold" id="summary-subtotal">0 RON</span>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold">Total</span>
+                            <span class="fs-4 fw-bold text-primary" id="summary-total">0 RON</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 text-muted small">
+                    <p>🔒 Datele tale sunt protejate și criptate SSL.</p>
+                </div>
+            </div>
+
+            <div class="col-md-7 col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold">📦 Detalii Livrare</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="checkout-form">
+                            <div class="mb-4">
+                                <label for="address" class="form-label text-muted small text-uppercase fw-bold">Adresă completă</label>
+                                <textarea id="address" class="form-control" rows="3" required placeholder="Strada, Număr, Bloc, Scara, Etaj, Oraș, Județ..."></textarea>
+                                <div class="form-text">Te rugăm să incluzi toate detaliile pentru curier.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="phone" class="form-label text-muted small text-uppercase fw-bold">Număr de Telefon</label>
+                                <input type="tel" id="phone" class="form-control" required placeholder="07xx xxx xxx">
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h5 class="mb-3 fw-bold">💳 Metodă de Plată</h5>
+
+                            <div class="list-group mb-3">
+                                <label class="list-group-item d-flex gap-3 align-items-center p-3">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="paymentMethod" id="pay-card" value="card" checked>
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <strong class="mb-1 d-block">Card Online</strong>
+                                            <span class="text-muted small">Plată securizată prin Stripe (Visa/Mastercard)</span>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">Rapid</span>
+                                    </div>
+                                </label>
+
+                                <label class="list-group-item d-flex gap-3 align-items-center p-3">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="paymentMethod" id="pay-cash" value="Ramburs">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <strong class="mb-1 d-block">Ramburs</strong>
+                                            <span class="text-muted small">Plătești cash curierului la livrare</span>
+                                        </div>
+                                        <span class="text-muted">Gratuit</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5 mt-3 shadow-sm btn-lg">
+                                Plasează Comanda ✅
+                            </button>
+                            <a href="cart.html" class="d-block text-center mt-3 text-decoration-none">← Înapoi la Coș</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
+        <div class="container">
+            <h4 class="mb-3" style="font-family: 'Dancing Script', cursive; color: #ff85a2;">SweetCorner</h4>
+            <p class="mb-0 small text-white-50">© 2025 SweetCorner. Toate drepturile rezervate.</p>
+            <p class="small text-white-50">Creat cu ❤️ pentru iubitorii de dulciuri.</p>
+        </div>
+    </footer>
+
+    <script src="js/site.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

@@ -89,3 +89,38 @@ function isAdmin() {
         return false;
     }
 }
+
+async function addToCart(productId, quantity = 1) {
+    if (!isLoggedIn()) {
+        alert("Trebuie să fii logată pentru a adauga produse in cos!");
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/Orders/add`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                productId: parseInt(productId), 
+                quantity: parseInt(quantity)    
+            })
+        });
+
+        if (response.ok) {
+            alert("✅ Produs adăugat în coș!");
+        } else {
+            if (response.status === 401) {
+                alert("Sesiunea a expirat. Te rugăm să te loghezi din nou.");
+                logout();
+                return;
+            }
+
+            const errorData = await response.json();
+            alert(`❌ Eroare: ${errorData.message || 'Nu s-a putut adăuga produsul.'}`);
+        }
+    } catch (error) {
+        console.error("Eroare rețea:", error);
+        alert(`Eroare de conexiune la server: ${API_BASE}`);
+    }
+}
