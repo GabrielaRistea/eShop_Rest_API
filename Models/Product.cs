@@ -22,5 +22,6 @@ namespace Proiect.Models
         public int CatogoryId { get; set; }
         public Category Category { get; set; }
         public ICollection<Wishlist> Wishlist { get; set; }
+        public string? PdfPath { get; set; }
     }
 }

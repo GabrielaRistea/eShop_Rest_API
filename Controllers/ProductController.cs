@@ -122,6 +122,7 @@ namespace Proiect.Controllers
                 ProductImage = p.ProductImage,
                 ImageFile = p.ImageFile,
                 Category = p.CatogoryId,
+                PdfPath = p.PdfPath,
                 CategoryName = p.Category?.Name ?? "Uncategorized",
             };
         }
@@ -137,6 +138,7 @@ namespace Proiect.Controllers
                 Stock = productDto.Stock,
                 ImageFile = productDto.ImageFile,
                 ProductImage = productDto.ProductImage,
+                PdfPath= productDto.PdfPath,
                 CatogoryId = productDto.Category
             };
         }

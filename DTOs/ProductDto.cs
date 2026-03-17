@@ -11,5 +11,7 @@
         public IFormFile? ImageFile { get; set; }
         public int Category { get; set; }
         public string? CategoryName { get; set; }
+        public IFormFile? PdfFile { get; set; } 
+        public string? PdfPath { get; set; }
     }
 }

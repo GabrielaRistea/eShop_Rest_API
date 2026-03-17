@@ -28,6 +28,18 @@ namespace Proiect.Services
                 }
             }
 
+            if (productDto.PdfFile != null && productDto.PdfFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + "_" + productDto.PdfFile.FileName;
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await productDto.PdfFile.CopyToAsync(stream);
+                }
+                productDto.PdfPath = "/documents/" + fileName; 
+            }
+
             var newProduct = new Product()
             {
                 ProductID = 0,
@@ -37,6 +49,7 @@ namespace Proiect.Services
                 Stock = productDto.Stock,
                 ImageFile = productDto.ImageFile,
                 ProductImage = productDto.ProductImage,
+                PdfPath = productDto.PdfPath,
                 CatogoryId = productDto.Category,
             };
 
@@ -45,6 +58,34 @@ namespace Proiect.Services
         }
         public async Task UpdateProductAsync(ProductDto productDto)
         {
+           
+
+            var existingProduct = _productRepository.GetById(productDto.Id);
+
+            if (existingProduct == null) return;
+
+            if (productDto.PdfFile != null && productDto.PdfFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingProduct.PdfPath))
+                {
+                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingProduct.PdfPath.TrimStart('/'));
+                    if (File.Exists(oldPath)) File.Delete(oldPath);
+                }
+
+                var fileName = Guid.NewGuid().ToString() + "_" + productDto.PdfFile.FileName;
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await productDto.PdfFile.CopyToAsync(stream);
+                }
+                existingProduct.PdfPath = "/documents/" + fileName;
+            }
+            existingProduct.Name = productDto.Name;
+            existingProduct.Description = productDto.Description;
+            existingProduct.Price = productDto.Price;
+            existingProduct.Stock = productDto.Stock;
+            existingProduct.CatogoryId = productDto.Category;
             using var ms = new MemoryStream();
 
             if (productDto.ImageFile != null && productDto.ImageFile.Length > 0)
@@ -52,18 +93,20 @@ namespace Proiect.Services
                 await productDto.ImageFile.CopyToAsync(ms);
                 productDto.ProductImage = ms.ToArray();
             }
-            var newProduct = new Product()
-            {
-                ProductID = productDto.Id,
-                Name = productDto.Name,
-                Description = productDto.Description,
-                Price = productDto.Price,
-                Stock = productDto.Stock,
-                ImageFile = productDto.ImageFile,
-                ProductImage = productDto.ProductImage,
-                CatogoryId = productDto.Category,
-            };
-            _productRepository.Update(newProduct);
+
+            //var newProduct = new Product()
+            //{
+            //    ProductID = productDto.Id,
+            //    Name = productDto.Name,
+            //    Description = productDto.Description,
+            //    Price = productDto.Price,
+            //    Stock = productDto.Stock,
+            //    ImageFile = productDto.ImageFile,
+            //    ProductImage = productDto.ProductImage,
+            //    PdfPath = productDto.PdfPath,
+            //    CatogoryId = productDto.Category,
+            //};
+            _productRepository.Update(existingProduct);
             _productRepository.Save();
         }
         public void DeleteProduct(int id)
@@ -71,6 +114,11 @@ namespace Proiect.Services
             var product = _productRepository.GetById(id);
             if (product != null)
             {
+                if (!string.IsNullOrEmpty(product.PdfPath))
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.PdfPath.TrimStart('/'));
+                    if (File.Exists(filePath)) File.Delete(filePath);
+                }
                 _productRepository.Delete(product);
                 _productRepository.Save();
             }
@@ -105,6 +153,7 @@ namespace Proiect.Services
                 ProductImage = p.ProductImage,
                 ImageFile = p.ImageFile,
                 Category = p.CatogoryId,
+                PdfPath = p.PdfPath,
                 CategoryName = p.Category?.Name ?? "Uncategorized",
             }).ToList();
         }
