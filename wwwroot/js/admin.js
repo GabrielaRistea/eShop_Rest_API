@@ -157,9 +157,10 @@ async function refreshProducts() {
                 : '<span class="text-muted small">Fără</span>';
 
             const tr = document.createElement('tr');
+            const hasPdf = p.pdfPath ? '<span class="badge bg-info">PDF</span>' : '';
             tr.innerHTML = `
                 <td>${thumb}</td>
-                <td class="fw-bold">${p.name}</td>
+                <td class="fw-bold">${p.name} ${hasPdf}</td>
                 <td><span class="badge bg-secondary">${p.categoryName || 'N/A'}</span></td>
                 <td>${p.price} RON</td>
                 <td><small class="text-muted">Stoc: ${p.stock ?? 0}</small></td>
@@ -249,6 +250,16 @@ async function startEditProduct(id) {
         const select = document.getElementById('select-categorie');
         select.value = p.category;
 
+        const pdfInput = document.getElementById('prod-pdf');
+        if (pdfInput) {
+            const label = pdfInput.previousElementSibling; 
+            if (p.pdfPath && label) {
+                label.innerHTML = `Pdf <span class="badge bg-info">Existent: ${p.pdfPath.split('/').pop()}</span>`;
+            } else if (label) {
+                label.textContent = "Pdf";
+            }
+        }
+
         document.getElementById('btn-submit-prod').textContent = "Actualizează Produsul";
         document.getElementById('btn-submit-prod').classList.replace('btn-success', 'btn-warning');
         document.getElementById('btn-cancel-prod').style.display = 'block';
@@ -276,6 +287,13 @@ async function deleteProduct(id) {
 function resetFormProduct() {
     isEditingProduct = false;
     document.getElementById('edit-prod-id').value = '';
+
+    const pdfInput = document.getElementById('prod-pdf');
+    if (pdfInput) {
+        const label = pdfInput.previousElementSibling;
+        if (label) label.textContent = "Pdf";
+    }
+
     document.getElementById('form-produs').reset();
 
     document.getElementById('btn-submit-prod').textContent = "Adaugă Produs";

@@ -31,6 +31,17 @@ async function getProductDetails(id) {
             imageSrc = `data:image/jpeg;base64,${p.productImage}`;
         }
 
+        let pdfButtonHtml = '';
+        if (p.pdfPath) {
+            pdfButtonHtml = `
+        <div class="mt-3">
+            <a href="${p.pdfPath}" target="_blank" class="btn btn-outline-secondary">
+                📄 Vezi Specificații PDF (Detalii complete)
+            </a>
+        </div>
+    `;
+        }
+
         container.innerHTML = `
             <div class="row bg-white shadow-sm rounded p-4">
                 <div class="col-md-6 mb-4 mb-md-0">
@@ -51,7 +62,7 @@ async function getProductDetails(id) {
                     <h3 class="text-primary mb-4">${p.price} RON</h3>
 
                     <p class="lead text-muted mb-4">${p.description}</p>
-
+                    ${pdfButtonHtml}
                     <hr class="my-4">
 
                     <div class="d-flex align-items-center mb-4">
