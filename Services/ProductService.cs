@@ -131,13 +131,67 @@ namespace Proiect.Services
         {
             return _productRepository.GetAll().ToList();
         }
-        public List<Product> searchProduct(string name)
+        //public List<Product> searchProduct(string name)
+        //{
+        //    var product = _productRepository.GetAll();
+
+        //    product = product.Where(p => p.Name != null ? p.Name.StartsWith(name) : true).ToList();
+
+        //    return product.ToList();
+        //}
+
+        public List<Product> searchProduct(string query)
         {
-            var product = _productRepository.GetAll();
+            var allProducts = _productRepository.GetAll().ToList();
 
-            product = product.Where(p => p.Name != null ? p.Name.StartsWith(name) : true).ToList();
+            if (string.IsNullOrWhiteSpace(query))
+                return allProducts;
 
-            return product.ToList();
+            var searchTerms = query.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var scoredResults = new List<(Product Product, double Score)>();
+
+            var idfWeights = new Dictionary<string, double>();
+            foreach (var term in searchTerms)
+            {
+                int titlesWithTerm = allProducts.Count(p =>
+                    p.Name != null && p.Name.ToLower().Contains(term));
+
+                double idf = Math.Log((double)allProducts.Count / (titlesWithTerm > 0 ? titlesWithTerm : 1) + 1.0);
+                idfWeights[term] = idf;
+            }
+
+            foreach (var product in allProducts)
+            {
+                double productScore = 0;
+                if (string.IsNullOrEmpty(product.Name)) continue;
+
+                var titleWords = product.Name.ToLower()
+                    .Split(new[] { ' ', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var term in searchTerms)
+                {
+                    int countInTitle = titleWords.Count(w => w == term);
+
+                    double tf = (double)countInTitle / titleWords.Length;
+
+                    if (product.Name.ToLower().StartsWith(term))
+                    {
+                        productScore += 0.1; 
+                    }
+
+                    productScore += tf * idfWeights[term];
+                }
+
+                if (productScore > 0)
+                {
+                    scoredResults.Add((product, productScore));
+                }
+            }
+
+            return scoredResults
+                .OrderByDescending(r => r.Score)
+                .Select(r => r.Product)
+                .ToList();
         }
 
         public async Task<List<ProductDto>> ProductsByCategory(int id)
