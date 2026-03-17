@@ -193,29 +193,50 @@ async function searchProducts() {
     const container = document.getElementById('container-produse');
 
     if (!term) {
-        resetFiltru(document.querySelector('.category-btn'));
+        //resetFiltru(document.querySelector('.category-btn'));
+        //return;
+        document.getElementById('titlu-categorie').textContent = 'Toate Produsele';
+        renderProduse(allProducts);
+        if (dropdown) dropdown.style.display = 'none';
         return;
     }
+    console.log("Cerem TF-IDF de la server pentru:", term);
+    //container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
+   // document.getElementById('titlu-categorie').textContent = `Rezultate căutare: "${term}"`;
 
-    container.innerHTML = '<div class="text-center w-100 mt-5"><div class="spinner-border text-primary"></div></div>';
-    document.getElementById('titlu-categorie').textContent = `Rezultate căutare: "${term}"`;
+    //try {
+    //    const url = `${URL_PRODUSE}/by-product-name/${encodeURIComponent(term)}`;
+    //    const response = await fetch(url);
+
+    //    if (response.status === 404) {
+    //        container.innerHTML = '<div class="alert alert-warning w-100">Nu am găsit produse cu acest nume.</div>';
+    //        return;
+    //    }
+
+    //    if (!response.ok) throw new Error("Eroare la căutare");
+
+    //    const produse = await response.json();
+    //    renderProduse(produse);
+
+    //} catch (err) {
+    //    container.innerHTML = `<div class="alert alert-danger w-100">Eroare: ${err.message}</div>`;
+    //}
 
     try {
         const url = `${URL_PRODUSE}/by-product-name/${encodeURIComponent(term)}`;
         const response = await fetch(url);
 
-        if (response.status === 404) {
-            container.innerHTML = '<div class="alert alert-warning w-100">Nu am găsit produse cu acest nume.</div>';
-            return;
+        if (response.ok) {
+            const produse = await response.json();
+
+            renderProduse(produse);
+
+            if (dropdown) {
+                renderDropdown(produse);
+            }
         }
-
-        if (!response.ok) throw new Error("Eroare la căutare");
-
-        const produse = await response.json();
-        renderProduse(produse);
-
     } catch (err) {
-        container.innerHTML = `<div class="alert alert-danger w-100">Eroare: ${err.message}</div>`;
+        console.error("Eroare la căutare:", err);
     }
 }
 
@@ -231,11 +252,34 @@ document.getElementById('search-input').addEventListener('keypress', function (e
 
 
 const searchInput = document.getElementById('search-input');
-const dropdown = document.getElementById('search-results-dropdown');
+//const dropdown = document.getElementById('search-results-dropdown');
 
 // tastare input
-searchInput.addEventListener('input', function (e) {
-    const term = e.target.value.toLowerCase().trim();
+//searchInput.addEventListener('input', function (e) {
+//    const term = e.target.value.toLowerCase().trim();
+
+//    if (term.length === 0) {
+//        if (dropdown) dropdown.style.display = 'none';
+//        renderProduse(allProducts);
+//        document.getElementById('titlu-categorie').textContent = 'Toate Produsele';
+//        return;
+//    }
+
+//    const rezultate = allProducts.filter(p =>
+//        p.name.toLowerCase().includes(term)
+//    );
+
+//    document.getElementById('titlu-categorie').textContent = `Rezultate pentru: "${e.target.value}"`;
+
+//    renderProduse(rezultate);
+
+//    if (dropdown) renderDropdown(rezultate);
+//});
+
+let searchTimer;
+
+searchInput.addEventListener('input', function () {
+    const term = this.value.trim();
 
     if (term.length === 0) {
         if (dropdown) dropdown.style.display = 'none';
@@ -244,15 +288,10 @@ searchInput.addEventListener('input', function (e) {
         return;
     }
 
-    const rezultate = allProducts.filter(p =>
-        p.name.toLowerCase().includes(term)
-    );
-
-    document.getElementById('titlu-categorie').textContent = `Rezultate pentru: "${e.target.value}"`;
-
-    renderProduse(rezultate);
-
-    if (dropdown) renderDropdown(rezultate);
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        searchProducts(); 
+    }, 300);
 });
 
 // lista dropdown search
