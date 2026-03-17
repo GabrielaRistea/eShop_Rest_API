@@ -135,7 +135,7 @@ window.openOrderById = function (id) {
 
     const itemsList = document.getElementById('modal-items-list');
     if (itemsList) {
-        itemsList.innerHTML = '';.
+        itemsList.innerHTML = '';
         itemsList.style.display = 'none'; 
     }
 
