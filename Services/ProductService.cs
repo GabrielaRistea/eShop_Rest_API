@@ -30,7 +30,7 @@ namespace Proiect.Services
 
             if (productDto.PdfFile != null && productDto.PdfFile.Length > 0)
             {
-                var fileName = Guid.NewGuid().ToString() + "_" + productDto.PdfFile.FileName;
+                var fileName = productDto.PdfFile.FileName;
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -72,7 +72,7 @@ namespace Proiect.Services
                     if (File.Exists(oldPath)) File.Delete(oldPath);
                 }
 
-                var fileName = Guid.NewGuid().ToString() + "_" + productDto.PdfFile.FileName;
+                var fileName = productDto.PdfFile.FileName;
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/documents", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
