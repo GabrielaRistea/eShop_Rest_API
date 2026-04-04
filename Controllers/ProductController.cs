@@ -110,6 +110,13 @@ namespace Proiect.Controllers
             }
         }
 
+        [HttpGet("predictive-search")]
+        public IActionResult GetSuggestions([FromQuery] string term)
+        {
+            var suggestions = _productService.GetPredictiveSuggestions(term);
+            return Ok(suggestions);
+        }
+
         private ProductDto mapProduct(Product p)
         {
             return new ProductDto()

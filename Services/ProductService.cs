@@ -1,4 +1,5 @@
-﻿using NuGet.Versioning;
+﻿using Humanizer;
+using NuGet.Versioning;
 using Proiect.DTOs;
 using Proiect.Models;
 using Proiect.Repositories.Interfaces;
@@ -188,9 +189,91 @@ namespace Proiect.Services
                 }
             }
 
-            return scoredResults
+            if (scoredResults.Count > 0)
+            {
+                return scoredResults
                 .OrderByDescending(r => r.Score)
                 .Select(r => r.Product)
+                .ToList();
+            }
+
+            // rezultate pentru cautare cu cuvinte gresite
+            var suggestions = GetPredictiveSuggestions(query);
+            
+            return allProducts.Where(p => suggestions.Contains(p.Name))
+                              .ToList();
+            
+        }
+
+        private int CalculateLevenshteinDistance(string s, string t)
+        {
+            int n = s.Length;   // lungime text cautat
+            int m = t.Length;   // lungime text cu care se compara (numele produsului)
+            int[,] d = new int[n + 1, m + 1];   // creare matrice pentru a stoca rezultatele
+
+            if (n == 0) return n;
+            if (m == 0) return m;
+
+            // initializare linii si coloane 
+            for (int i = 0; i <= n; d[i, 0] = i++) ; 
+            for (int j = 0; j <= m; d[0, j] = j++) ;
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = 1; j <= m; j++)
+                {
+                    int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),     // stergere sau inserare
+                        d[i - 1, j - 1] + cost);                        // inlocuire
+                }
+            }
+
+            return d[n, m];
+        }
+
+        public List<string> GetPredictiveSuggestions(string query)
+        {
+            var allProducts = _productRepository.GetAll().ToList();
+            if (string.IsNullOrWhiteSpace(query)) return new List<string>();
+
+            string lowerQuery = query.ToLower();
+            var suggestions = new List<(string Name, int Distance, bool IsPrefix)>();
+
+            foreach (var product in allProducts)
+            {
+                if (string.IsNullOrEmpty(product.Name)) continue;
+                string name = product.Name.ToLower();
+
+                if (name.Contains(lowerQuery))
+                {
+                    bool startsWith = name.StartsWith(lowerQuery);
+                    suggestions.Add((product.Name, 0, startsWith));
+                    continue;
+                }
+
+                int fullDistance = CalculateLevenshteinDistance(lowerQuery, name);
+
+                var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                int minWordDistance = words.Select(w => CalculateLevenshteinDistance(lowerQuery, w)).Min();
+
+                int finalDistance = Math.Min(fullDistance, minWordDistance);
+
+                int allowedDistance = lowerQuery.Length <= 3 ? 1 : 2;
+
+                // maxim doua greseli
+                if (finalDistance <= allowedDistance)
+                {
+                    suggestions.Add((product.Name, finalDistance, false));
+                }
+            }
+
+            return suggestions
+                .OrderBy(x => x.Distance)
+                .ThenByDescending(x => x.IsPrefix)
+                .Select(x => x.Name)
+                .Distinct()
+                .Take(5)
                 .ToList();
         }
 
@@ -220,6 +303,6 @@ namespace Proiect.Services
             }
 
             return _productRepository.GetProductsByFilters(minPrice, maxPrice, inStock, categoryId).ToList();
-        }
+        }   
     }
 }
