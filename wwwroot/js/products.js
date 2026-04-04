@@ -5,6 +5,9 @@ let inputMin = document.getElementById('input-min');
 let inputMax = document.getElementById('input-max');
 let priceSlider = document.getElementById('price-slider');
 
+const searchInput = document.getElementById('search-input');
+const dropdown = document.getElementById('search-results-dropdown');
+
 document.addEventListener('DOMContentLoaded', () => {
     loadCategories();
     preloadProducts();
@@ -163,8 +166,8 @@ function filterByCategory(id, nume, btnElement) {
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btnElement.classList.add('active');
 
-    document.getElementById('search-input').value = '';
-    const dropdown = document.getElementById('search-results-dropdown');
+    searchInput.value = '';
+
     if (dropdown) dropdown.style.display = 'none';
 
     resetFiltersUI();
@@ -179,16 +182,15 @@ function resetFiltru(btnElement) {
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btnElement.classList.add('active');
 
-    document.getElementById('search-input').value = '';
+    searchInput.value = '';
 
     resetFiltersUI();
 
     renderProduse(allProducts); 
 }
 
-// bara cautare
 async function searchProducts() {
-    const input = document.getElementById('search-input');
+    const input = searchInput;
     const term = input.value.trim();
     const container = document.getElementById('container-produse');
 
@@ -240,21 +242,7 @@ async function searchProducts() {
     }
 }
 
-// enter key listener
-document.getElementById('search-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        searchProducts();
-
-        const dropdown = document.getElementById('search-results-dropdown');
-        if (dropdown) dropdown.style.display = 'none';
-    }
-});
-
-
-const searchInput = document.getElementById('search-input');
-//const dropdown = document.getElementById('search-results-dropdown');
-
-// tastare input
+// --- fara tf idf ---
 //searchInput.addEventListener('input', function (e) {
 //    const term = e.target.value.toLowerCase().trim();
 
@@ -278,52 +266,67 @@ const searchInput = document.getElementById('search-input');
 
 let searchTimer;
 
+// --- cu tf idf ---
+//searchInput.addEventListener('input', function () {
+//    const term = this.value.trim();
+
+//    if (term.length === 0) {
+//        if (dropdown) dropdown.style.display = 'none';
+//        renderProduse(allProducts);
+//        document.getElementById('titlu-categorie').textContent = 'Toate Produsele';
+//        return;
+//    }
+
+//    clearTimeout(searchTimer);
+//    searchTimer = setTimeout(() => {
+//        searchProducts();
+//    }, 300);
+//});
+
+
+// --- cautare predictiva ---- 
 searchInput.addEventListener('input', function () {
     const term = this.value.trim();
 
-    if (term.length === 0) {
+    if (term.length < 2) {
         if (dropdown) dropdown.style.display = 'none';
-        renderProduse(allProducts);
-        document.getElementById('titlu-categorie').textContent = 'Toate Produsele';
         return;
     }
 
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => {
-        searchProducts(); 
+    searchTimer = setTimeout(async () => {
+        try {
+            const response = await fetch(`${URL_PRODUSE}/predictive-search?term=${encodeURIComponent(term)}`);
+            if (response.ok) {
+                const suggestions = await response.json();
+                renderAutocompleteDropdown(suggestions);
+            }
+        } catch (err) {
+            console.error("Eroare la sugestii predictive:", err);
+        }
     }, 300);
 });
 
-// lista dropdown search
-function renderDropdown(produse) {
+// --- cautare predictiva ---
+function renderAutocompleteDropdown(suggestions) {
+    if (!dropdown) return;
     dropdown.innerHTML = '';
 
-    if (produse.length === 0) {
-        dropdown.innerHTML = '<div class="p-3 text-muted text-center">Niciun rezultat.</div>';
-        dropdown.style.display = 'block';
+    if (suggestions.length === 0) {
+        dropdown.style.display = 'none';
         return;
     }
 
-    // afisare maxim 5 sugestii
-    produse.slice(0, 5).forEach(p => {
-        let thumb = 'https://dummyimage.com/40x40/dee2e6/6c757d.jpg';
-        if (p.productImage) {
-            thumb = `data:image/jpeg;base64,${p.productImage}`;
-        }
-
+    suggestions.forEach(name => {
         const div = document.createElement('div');
-        div.className = 'search-result-item'; 
-        div.innerHTML = `
-            <img src="${thumb}" class="search-thumb">
-            <div>
-                <div class="fw-bold">${p.name}</div>
-            </div>
-        `;
+        div.className = 'search-result-item p-2';
+        div.style.cursor = 'pointer';
+        div.innerHTML = `<div class="fw-bold">${name}</div>`;
 
         div.onclick = () => {
-            searchInput.value = p.name;
+            searchInput.value = name;
             dropdown.style.display = 'none';
-            renderProduse([p]); 
+            searchProducts(); 
         };
 
         dropdown.appendChild(div);
@@ -331,6 +334,54 @@ function renderDropdown(produse) {
 
     dropdown.style.display = 'block';
 }
+
+// --- lista dropdown search (fara cautare predictiva) ---
+//function renderDropdown(produse) {
+//    dropdown.innerHTML = '';
+
+//    if (produse.length === 0) {
+//        dropdown.innerHTML = '<div class="p-3 text-muted text-center">Niciun rezultat.</div>';
+//        dropdown.style.display = 'block';
+//        return;
+//    }
+
+//    // afisare maxim 5 sugestii
+//    produse.slice(0, 5).forEach(p => {
+//        let thumb = 'https://dummyimage.com/40x40/dee2e6/6c757d.jpg';
+//        if (p.productImage) {
+//            thumb = `data:image/jpeg;base64,${p.productImage}`;
+//        }
+
+//        const div = document.createElement('div');
+//        div.className = 'search-result-item'; 
+//        div.innerHTML = `
+//            <img src="${thumb}" class="search-thumb">
+//            <div>
+//                <div class="fw-bold">${p.name}</div>
+//            </div>
+//        `;
+
+//        div.onclick = () => {
+//            searchInput.value = p.name;
+//            dropdown.style.display = 'none';
+//            renderProduse([p]); 
+//        };
+
+//        dropdown.appendChild(div);
+//    });
+
+//    dropdown.style.display = 'block';
+//}
+
+
+// enter key listener
+searchInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        searchProducts();
+
+        if (dropdown) dropdown.style.display = 'none';
+    }
+});
 
 // ascunde dropdown daca click in afara lui
 document.addEventListener('click', (e) => {
