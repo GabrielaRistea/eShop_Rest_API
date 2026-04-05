@@ -15,5 +15,6 @@ namespace Proiect.Services.Interfaces
         Task<List<ProductDto>> ProductsByCategory(int id);
         List<Product> GetProductsByFilters(float? minPrice, float? maxPrice, bool? inStock, int? categoryId);
         List<string> GetPredictiveSuggestions(string query);
+        List<ProductDto> GetSimilarProducts(int productId, int limit = 4);
     }
 }
