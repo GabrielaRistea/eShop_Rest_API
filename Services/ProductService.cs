@@ -303,6 +303,97 @@ namespace Proiect.Services
             }
 
             return _productRepository.GetProductsByFilters(minPrice, maxPrice, inStock, categoryId).ToList();
-        }   
+        }
+
+        public List<ProductDto> GetSimilarProducts(int productId, int limit = 4)
+        {
+            var allProducts = _productRepository.GetAll().ToList();
+            var targetProduct = allProducts.FirstOrDefault(p => p.ProductID == productId); 
+
+            if (targetProduct == null) return new List<ProductDto>();
+
+            var otherProducts = allProducts.Where(p => p.ProductID != productId).ToList();
+
+            Func<Product, string[]> GetWords = p => ((p.Name ?? "") + " " + (p.Description ?? ""))
+                .ToLower()
+                .Split(new[] { ' ', ',', '.', '!', '?', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var targetWords = GetWords(targetProduct);
+            var allDocs = allProducts.Select(p => GetWords(p)).ToList();
+
+            var idfWeights = new Dictionary<string, double>();
+
+            var targetVector = new Dictionary<string, double>();
+            double targetMagnitudeSq = 0; 
+
+            foreach (var word in targetWords.Distinct())
+            {
+                int docsWithWord = allDocs.Count(d => d.Contains(word));
+                double idf = Math.Log((double)allDocs.Count / (docsWithWord > 0 ? docsWithWord : 1) + 1.0);
+                idfWeights[word] = idf;
+
+                double tf = (double)targetWords.Count(w => w == word) / targetWords.Length;
+                double val = tf * idf;
+
+                targetVector[word] = val;
+                targetMagnitudeSq += val * val;
+            }
+
+            double targetMagnitude = Math.Sqrt(targetMagnitudeSq);
+            if (targetMagnitude == 0) return new List<ProductDto>();
+
+            var scoredProducts = new List<(Product Product, double Score)>();
+
+            foreach (var product in otherProducts)
+            {
+                var words = GetWords(product);
+                if (words.Length == 0) continue;
+
+                double dotProduct = 0;
+                double otherMagnitudeSq = 0; 
+
+                foreach (var word in words.Distinct())
+                {
+                    if (!idfWeights.ContainsKey(word))
+                    {
+                        int docsWithWord = allDocs.Count(d => d.Contains(word));
+                        idfWeights[word] = Math.Log((double)allDocs.Count / (docsWithWord > 0 ? docsWithWord : 1) + 1.0);
+                    }
+
+                    double tf = (double)words.Count(w => w == word) / words.Length;
+                    double val = tf * idfWeights[word];
+                    otherMagnitudeSq += val * val;
+
+                    if (targetVector.ContainsKey(word))
+                    {
+                        dotProduct += targetVector[word] * val;
+                    }
+                }
+
+                double otherMagnitude = Math.Sqrt(otherMagnitudeSq);
+
+                if (otherMagnitude > 0)
+                {
+                    double cosineSimilarity = dotProduct / (targetMagnitude * otherMagnitude);
+                    if (cosineSimilarity > 0) 
+                    {
+                        scoredProducts.Add((product, cosineSimilarity));
+                    }
+                }
+            }
+
+            return scoredProducts
+                .OrderByDescending(x => x.Score)
+                .Take(limit)
+                .Select(x => new ProductDto 
+                {
+                    Id = x.Product.ProductID,
+                    Name = x.Product.Name,
+                    Price = x.Product.Price,
+                    Description = x.Product.Description,
+                    ProductImage = x.Product.ProductImage
+                })
+                .ToList();
+        }
     }
 }

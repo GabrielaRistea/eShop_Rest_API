@@ -117,6 +117,20 @@ namespace Proiect.Controllers
             return Ok(suggestions);
         }
 
+        [HttpGet("{id}/similar")]
+        public IActionResult GetSimilarProducts(int id)
+        {
+            try
+            {
+                var similarProducts = _productService.GetSimilarProducts(id, 4);
+                return Ok(similarProducts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Eroare la calculul similaritatii: {ex.Message}");
+            }
+        }
+
         private ProductDto mapProduct(Product p)
         {
             return new ProductDto()

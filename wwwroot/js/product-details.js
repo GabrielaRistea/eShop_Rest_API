@@ -88,6 +88,55 @@ async function getProductDetails(id) {
     } catch (err) {
         container.innerHTML = `<div class="alert alert-danger">Eroare: ${err.message} <br> <a href="produse.html">Înapoi la produse</a></div>`;
     }
+
+    loadSimilarProducts(id);
+}
+
+async function loadSimilarProducts(productId) {
+    const container = document.getElementById('main-container');
+
+    try {
+        const response = await fetch(`${URL_PRODUSE}/${productId}/similar`);
+        if (!response.ok) return;
+
+        const similarProducts = await response.json();
+
+        if (similarProducts.length === 0) return; 
+
+        let cardsHtml = '';
+        similarProducts.forEach(p => {
+            let thumb = p.productImage ? `data:image/jpeg;base64,${p.productImage}` : 'https://dummyimage.com/300x200/dee2e6/6c757d.jpg';
+
+            cardsHtml += `
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <a href="product-details.html?id=${p.id}">
+                            <img src="${thumb}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${p.name}">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title fw-bold">${p.name}</h6>
+                            <p class="text-primary mb-2">${p.price} RON</p>
+                            <a href="product-details.html?id=${p.id}" class="btn btn-sm btn-outline-secondary mt-auto">Vezi Detalii</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const similarSection = document.createElement('div');
+        similarSection.className = 'mt-5';
+        similarSection.innerHTML = `
+            <h3 class="fw-bold mb-4 border-bottom pb-2">Produse Similare</h3>
+            <div class="row">
+                ${cardsHtml}
+            </div>
+        `;
+
+        container.appendChild(similarSection);
+
+    } catch (err) {
+        console.error("Eroare la încărcarea produselor similare:", err);
+    }
 }
 
 const URL_WISHLIST_ADD = "https://localhost:7052/Wishlist/add";
