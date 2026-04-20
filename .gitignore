@@ -532,6 +532,8 @@ obj/
 /node_modules
 /wwwroot/node_modules
 
+**/LuceneIndex/
+
 ### VisualStudio ###
 
 # User-specific files

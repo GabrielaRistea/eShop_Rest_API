@@ -12,9 +12,11 @@ namespace Proiect.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        private readonly ILuceneService _luceneService;
+        public ProductController(IProductService productService, ILuceneService luceneService)
         {
             _productService = productService;
+            _luceneService = luceneService;
         }
         [HttpGet]
         //[ProducesResponseType(typeof(List<ProductDto>), StatusCodes.Status200OK)]
@@ -129,6 +131,25 @@ namespace Proiect.Controllers
             {
                 return StatusCode(500, $"Eroare la calculul similaritatii: {ex.Message}");
             }
+        }
+
+        [HttpGet("advanced-search")]
+        public IActionResult AdvancedSearch([FromQuery] string q, [FromQuery] string sort = "desc")
+        {
+            if (string.IsNullOrWhiteSpace(q))
+                return Ok(new List<AdvancedSearchResultDto>());
+
+            var results = _luceneService.Search(q, sort);
+
+            return Ok(results);
+        }
+
+        [HttpPost("rebuild-index")]
+        public IActionResult RebuildIndex()
+        {
+            var allProducts = _productService.GetAllProducts();
+            _luceneService.BuildIndex(allProducts);
+            return Ok("Indexul Lucene a fost regenerat cu succes!");
         }
 
         private ProductDto mapProduct(Product p)
