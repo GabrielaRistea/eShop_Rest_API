@@ -88,7 +88,11 @@
                     <div class="col-md-4">
                         <div class="input-group search-container">
                             <input type="text" id="search-input" class="form-control" placeholder="Caută produs..." autocomplete="off">
-                            <button class="btn btn-outline-secondary" type="button">🔍</button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="searchProducts()">🔍</button>
+
+                            <button class="btn btn-primary" type="button" onclick="goToAdvancedSearch()">
+                                Căutare Avansată (PDF)
+                            </button>
 
                             <div id="search-results-dropdown"></div>
                         </div>

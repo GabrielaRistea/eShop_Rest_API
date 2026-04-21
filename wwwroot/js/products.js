@@ -467,3 +467,13 @@ async function addToWishlist(productId) {
         alert("Serverul nu a putut fi contactat.");
     }
 }
+
+function goToAdvancedSearch() {
+    const query = document.getElementById('search-input').value;
+    if (!query || query.trim() === "") {
+        alert("Te rugăm să introduci un termen pentru a căuta în specificațiile tehnice.");
+        return;
+    }
+    // Redirecționăm către pagina separată cerută în task
+    window.location.href = `advanced-search.html?q=${encodeURIComponent(query)}`;
+}

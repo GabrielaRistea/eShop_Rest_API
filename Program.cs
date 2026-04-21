@@ -80,6 +80,24 @@ namespace Proiect
             builder.Services.AddScoped<ILuceneService, LuceneService>();
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var luceneService = services.GetRequiredService<ILuceneService>();
+                    var productService = services.GetRequiredService<IProductService>();
+
+                    var products = productService.GetAllProducts().ToList();
+                    luceneService.BuildIndex(products);
+
+                    Console.WriteLine("Indexul Lucene a fost regenerat cu succes la pornirea aplicatiei.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Eroare la indexarea initiala Lucene: {ex.Message}");
+                }
+            }
 
             if (app.Environment.IsDevelopment())
             {
